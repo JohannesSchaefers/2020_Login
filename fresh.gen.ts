@@ -12,6 +12,7 @@ import * as $index from "./routes/index.tsx";
 import * as $login from "./routes/login.tsx";
 import * as $logout from "./routes/logout.tsx";
 import * as $pdfs_name_ from "./routes/pdfs/[name].ts";
+import * as $pdfs_middleware from "./routes/pdfs/_middleware.ts";
 
 import type { Manifest } from "$fresh/server.ts";
 
@@ -27,6 +28,7 @@ const manifest = {
     "./routes/login.tsx": $login,
     "./routes/logout.tsx": $logout,
     "./routes/pdfs/[name].ts": $pdfs_name_,
+    "./routes/pdfs/_middleware.ts": $pdfs_middleware,
   },
   islands: {},
   baseUrl: import.meta.url,

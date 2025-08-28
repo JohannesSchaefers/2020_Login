@@ -92,6 +92,7 @@ export const handler: Handlers = {
         headers: {
           "Content-Type": "application/pdf",
           "Content-Disposition": `inline; filename="${name}"`,
+          "Access-Control-Allow-Origin": "*",
         },
       });
     } catch (error) {

@@ -157,7 +157,7 @@ export const handler: Handlers = {
           "Content-Type": "application/pdf",
           "Content-Disposition": `inline; filename="${name}"`,
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Expose-Headers": "Content-Length, Accept-Ranges",
+          "Access-Control-Expose-Headers": "Content-Length,  Accept-Ranges",
         },
       });
     } catch (error) {

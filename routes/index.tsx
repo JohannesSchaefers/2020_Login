@@ -130,7 +130,7 @@ export default function Home({
           Hochladen
         </button>
       </form>
-      <h2>Hochgeladene PDFs</h2>
+      <h2>Hochgeladene PDFis</h2>
       <ul>
         {data.pdfs.length === 0 && <li>Keine PDFs gefunden.</li>}
         {data.pdfs.map((pdf) => (

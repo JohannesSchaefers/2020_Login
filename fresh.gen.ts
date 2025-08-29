@@ -4,7 +4,6 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
-import * as $_middleware from "./routes/_middleware.ts";
 import * as $api_delete from "./routes/api/delete.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
@@ -12,7 +11,6 @@ import * as $index from "./routes/index.tsx";
 import * as $login from "./routes/login.tsx";
 import * as $logout from "./routes/logout.tsx";
 import * as $pdfs_name_ from "./routes/pdfs/[name].ts";
-import * as $pdfs_middleware from "./routes/pdfs/_middleware.ts";
 
 import type { Manifest } from "$fresh/server.ts";
 
@@ -20,7 +18,6 @@ const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
-    "./routes/_middleware.ts": $_middleware,
     "./routes/api/delete.ts": $api_delete,
     "./routes/api/upload.ts": $api_upload,
     "./routes/greet/[name].tsx": $greet_name_,
@@ -28,7 +25,6 @@ const manifest = {
     "./routes/login.tsx": $login,
     "./routes/logout.tsx": $logout,
     "./routes/pdfs/[name].ts": $pdfs_name_,
-    "./routes/pdfs/_middleware.ts": $pdfs_middleware,
   },
   islands: {},
   baseUrl: import.meta.url,

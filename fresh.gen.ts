@@ -5,7 +5,9 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $_middleware from "./routes/_middleware.ts";
+import * as $api_PDFViewer from "./islands/PDFViewer.tsx";
 import * as $api_delete from "./routes/api/delete.ts";
+import * as $api_pdf from "./routes/api/pdf.ts";
 import * as $api_upload from "./routes/api/upload.ts";
 import * as $greet_name_ from "./routes/greet/[name].tsx";
 import * as $index from "./routes/index.tsx";
@@ -21,7 +23,9 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/_middleware.ts": $_middleware,
+    "./routes/api/PDFViewer.tsx": $api_PDFViewer,
     "./routes/api/delete.ts": $api_delete,
+    "./routes/api/pdf.ts": $api_pdf,
     "./routes/api/upload.ts": $api_upload,
     "./routes/greet/[name].tsx": $greet_name_,
     "./routes/index.tsx": $index,

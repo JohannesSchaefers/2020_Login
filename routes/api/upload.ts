@@ -98,7 +98,7 @@ const form = await req.formData();
 const file = form.get("pdf");
 if (!(file instanceof File)) {
 return Response.redirect(
-new URL("/?error=Keine Datei ausgewählt", req.url),
+new URL("/?error=Keine Datei ausgewählt!", req.url),
 303,
 );
 }

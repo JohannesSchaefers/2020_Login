@@ -73,6 +73,8 @@ export default function Home({
 
 import { Handlers, PageProps } from "$fresh/server.ts";
 import { S3Client, ListObjectsV2Command } from "npm:@aws-sdk/client-s3";
+import PDFViewer from "../islands/PDFViewer.tsx";
+
 
 type PDFItem = { name: string };
 
@@ -113,7 +115,7 @@ export const handler: Handlers<{ pdfs: PDFItem[]; error?: string }> = {
     return ctx.render({ pdfs, error });
   },
 };
-
+/*
 export default function Home({
   data,
 }: PageProps<{ pdfs: PDFItem[]; error?: string }>) {
@@ -135,6 +137,54 @@ export default function Home({
         {data.pdfs.length === 0 && <li>Keine PDFs gefunden.</li>}
         {data.pdfs.map((pdf) => (
           <li key={pdf.name}>
+            <a
+              href={`/pdfs/${encodeURIComponent(pdf.name)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {pdf.name}
+            </a>{" "}
+            <form
+              action={`/api/delete?name=${encodeURIComponent(pdf.name)}`}
+              method="post"
+              style={{ display: "inline" }}
+            >
+              <button type="submit" style={{ color: "red" }}>
+                Löschen
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+*/
+export default function Home({
+  data,
+}: PageProps<{ pdfs: PDFItem[]; error?: string }>) {
+  return (
+    <div style={{ maxWidth: "600px", margin: "auto", padding: "1rem" }}>
+      <h1>PDF-Upload</h1>
+      <a href="/logout" style={{ float: "right" }}>
+        Logout
+      </a>
+      {data.error && <p style={{ color: "red" }}>Fehler: {data.error}</p>}
+
+      <form action="/api/upload" method="post" encType="multipart/form-data">
+        <input type="file" name="pdf" accept="application/pdf" required />
+        <button type="submit" style={{ marginLeft: "0.5rem" }}>
+          Hochladen
+        </button>
+      </form>
+
+      <h2>Hochgeladene PDFis</h2>
+      <ul>
+        {data.pdfs.length === 0 && <li>Keine PDFs gefunden.</li>}
+        {data.pdfs.map((pdf) => (
+          <li key={pdf.name}>
+            {/* Use pdf.name variable here */}
+            <PDFViewer filename={pdf.name} />
             <a
               href={`/pdfs/${encodeURIComponent(pdf.name)}`}
               target="_blank"

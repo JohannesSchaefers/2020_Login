@@ -75,7 +75,7 @@ export default function Home({
               method="post"
               style={{ display: "inline" }}
             >
-              <button type="submit" style={{ color: "green" }}>
+              <button type="submit" style={{ color: "red" }}>
                 Löschen
               </button>
             </form>

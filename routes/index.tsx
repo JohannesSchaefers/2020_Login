@@ -3,8 +3,8 @@ import { S3Client, ListObjectsV2Command } from "npm:@aws-sdk/client-s3";
 
 type PDFItem = { name: string };
 
-//const BUCKET = "2020-rechnungen";
-const BUCKET = "bucket2";
+const BUCKET = "2020-rechnungen";
+//const BUCKET = "bucket2";
 const ENDPOINT = "https://a472768f5dff0e95af7610729ca9c462.eu.r2.cloudflarestorage.com";
 const REGION = "weur";
 const ACCESS_KEY_ID = Deno.env.get("R2_ACCESS_KEY_ID");

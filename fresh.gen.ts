@@ -28,7 +28,7 @@ const manifest = {
     "./routes/login.tsx": $login,
     "./routes/logout.tsx": $logout,
     "./routes/pdfs/[name].ts": $pdfs_name_,
-    "./routes/pdfs/_middleware.ts": $pdfs_middleware,
+    "./routes/pdfs/_middleware.ts": $pdfs_middleware
   },
   islands: {},
   baseUrl: import.meta.url,

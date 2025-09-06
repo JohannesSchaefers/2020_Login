@@ -76,7 +76,7 @@ export default function Home({
               style={{ display: "inline" }}
             >
               <button type="submit" style={{ color: "red" }}>
-                Löschen
+                Löschen??
               </button>
             </form>
           </li>

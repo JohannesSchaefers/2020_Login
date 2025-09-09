@@ -1,28 +1,40 @@
 import { Handlers, PageProps } from "$fresh/server.ts";
 
-const PASSWORD = "changeme"; // Bitte auf sicheres Passwort setzen
+const PASSWORD = "changeme";
 
 export const handler: Handlers = {
   GET: (_req, ctx) => {
+    console.log("Handling GET /login");
     return ctx.render({ error: null });
   },
 
   POST: async (req, ctx) => {
+    console.log("Handling POST /login");
+
     const form = await req.formData();
     const password = form.get("password");
 
-    if (password !== PASSWORD) {
+    console.log(`Received password: ${password}, type: ${typeof password}`);
+
+    if (typeof password !== "string" || password.trim() !== PASSWORD) {
+      console.log("Password invalid or not a string");
       return ctx.render({ error: "Ungültiges Passwort" });
     }
 
-    // Redirect + Cookie setzen – kein Response.redirect(), damit Header nicht immutable sind
-    return new Response(null, {
-      status: 303,
-      headers: {
-        "Location": "/",
-        "Set-Cookie": "session=1; HttpOnly; Path=/; SameSite=Lax; Max-Age=3600",
-      },
-    });
+    console.log("Password valid, setting cookie and redirecting to /home");
+
+const isSecure = req.url.startsWith("https://"); // safer check
+const cookie = `auth=valid; HttpOnly; Path=/; SameSite=Lax; Max-Age=600${isSecure ? "; Secure" : ""}`;
+console.log("Set-Cookie:", cookie);
+
+return new Response(null, {
+  status: 303,
+  headers: {
+    Location: "/home",
+    "Set-Cookie": cookie,
+  },
+});
+
   },
 };
 
@@ -30,22 +42,24 @@ export default function LoginPage(
   { data }: PageProps<{ error: string | null }>,
 ) {
   return (
-    <div style={{ maxWidth: "320px", margin: "auto", padding: "1rem" }}>
-      <h1>Login</h1>
-      {data.error && <p style={{ color: "red" }}>{data.error}</p>}
-      <form method="post">
-        <label>
+    <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h1 class="text-2xl font-bold mb-4">Login</h1>
+      {data.error && <p class="text-red-500 mb-4">{data.error}</p>}
+      <form method="POST" action="/login" class="flex flex-col gap-4">
+        <label class="flex flex-col">
           Passwort:
-          <br />
           <input
             type="password"
             name="password"
+            class="mt-1 p-2 border rounded"
             autoComplete="current-password"
             required
           />
         </label>
-        <br />
-        <button type="submit" style={{ marginTop: "0.5rem" }}>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
           Anmelden
         </button>
       </form>

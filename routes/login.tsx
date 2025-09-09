@@ -1,67 +1,83 @@
+// routes/login.tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
 
-const PASSWORD = "changeme";
-
-export const handler: Handlers = {
-  GET: (_req, ctx) => {
+export const handler: Handlers<{ error?: string }> = {
+  // Handle GET requests to render the login page
+  GET(req, ctx) {
     console.log("Handling GET /login");
-    return ctx.render({ error: null });
-  },
-
-  POST: async (req, ctx) => {
-    console.log("Handling POST /login");
-
-    const form = await req.formData();
-    const password = form.get("password");
-
-    console.log(`Received password: ${password}, type: ${typeof password}`);
-
-    if (typeof password !== "string" || password.trim() !== PASSWORD) {
-      console.log("Password invalid or not a string");
-      return ctx.render({ error: "Ungültiges Passwort" });
+    // Check if already authenticated
+    const cookieHeader = req.headers.get("cookie") || "";
+    const cookies = Object.fromEntries(
+      cookieHeader.split(";").map((c) => c.trim().split("=")),
+    );
+    if (cookies.auth === "valid") {
+      console.log("Already authenticated, redirecting to /home");
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "/home" },
+      });
     }
-
-    console.log("Password valid, setting cookie and redirecting to /home");
-
-const isSecure = req.url.startsWith("https://"); // safer check
-const cookie = `auth=valid; HttpOnly; Path=/; SameSite=Lax; Max-Age=600${isSecure ? "; Secure" : ""}`;
-console.log("Set-Cookie:", cookie);
-
-return new Response(null, {
-  status: 303,
-  headers: {
-    Location: "/home",
-    "Set-Cookie": cookie,
+    // Always pass a data object to ctx.render
+    const url = new URL(req.url);
+    const error = url.searchParams.get("error") || undefined;
+    return ctx.render({ error });
   },
-});
 
+  // Handle POST requests for password submission
+  async POST(req, ctx) {
+    console.log("Handling POST /login");
+    try {
+      // Get form data
+      const formData = await req.formData();
+      const password = formData.get("password")?.toString();
+
+      if (!password) {
+        console.log("No password provided");
+        return new Response(null, {
+          status: 302,
+          headers: { Location: "/login?error=Missing%20password" },
+        });
+      }
+
+      // Replace with your actual password validation logic
+      const isValidPassword = password === Deno.env.get("LOGIN_PASSWORD") || "secret123"; // Use env var or fallback
+      if (isValidPassword) {
+        console.log("Password valid, setting auth cookie");
+        const headers = new Headers({ Location: "/home" });
+        headers.set("Set-Cookie", "auth=valid; HttpOnly; Path=/; Max-Age=3600"); // 1-hour cookie
+        return new Response(null, { status: 302, headers });
+      } else {
+        console.log("Invalid password");
+        return new Response(null, {
+          status: 302,
+          headers: { Location: "/login?error=Invalid%20password" },
+        });
+      }
+    } catch (error) {
+      console.error("Error processing login:", error);
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "/login?error=Server%20error" },
+      });
+    }
   },
 };
 
-export default function LoginPage(
-  { data }: PageProps<{ error: string | null }>,
-) {
+export default function LoginPage({ data }: PageProps<{ error?: string }>) {
+  // Fallback to handle undefined data
+  const error = data?.error || undefined;
   return (
-    <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 class="text-2xl font-bold mb-4">Login</h1>
-      {data.error && <p class="text-red-500 mb-4">{data.error}</p>}
-      <form method="POST" action="/login" class="flex flex-col gap-4">
-        <label class="flex flex-col">
-          Passwort:
-          <input
-            type="password"
-            name="password"
-            class="mt-1 p-2 border rounded"
-            autoComplete="current-password"
-            required
-          />
-        </label>
-        <button
-          type="submit"
-          class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-        >
-          Anmelden
-        </button>
+    <div style={{ maxWidth: "400px", margin: "auto", padding: "1rem" }}>
+      <h1>Login</h1>
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      <form method="POST" action="/login">
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+        <button type="submit">Login</button>
       </form>
     </div>
   );

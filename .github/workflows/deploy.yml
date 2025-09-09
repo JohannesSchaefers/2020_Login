@@ -1,9 +1,9 @@
 name: Deploy
 on:
   push:
-    branches: Gefunden
+    branches: my-local-branch
   pull_request:
-    branches: Gefunden
+    branches: my-local-branch
 
 jobs:
   deploy:

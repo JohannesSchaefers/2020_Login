@@ -1,50 +1,62 @@
-// routes/login.tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
 
-export const handler: Handlers<{ error?: string }> = {
-  GET(req, ctx) {
+const PASSWORD = "changeme";
+
+export const handler: Handlers = {
+  GET: (_req, ctx) => {
     console.log("Handling GET /login");
-    const cookies = Object.fromEntries(
-      (req.headers.get("cookie") || "").split(";").map((c) => c.trim().split("=")),
-    );
-    if (cookies.auth === "valid") {
-      console.log("Already authenticated, redirecting to /home");
-      return new Response(null, { status: 302, headers: { Location: "/home" } });
-    }
-    const error = new URL(req.url).searchParams.get("error") || undefined;
-    return ctx.render({ error });
+    return ctx.render({ error: null });
   },
-  async POST(req, ctx) {
+
+  POST: async (req, ctx) => {
     console.log("Handling POST /login");
-    try {
-      const formData = await req.formData();
-      const password = formData.get("password")?.toString();
-      if (!password) {
-        return new Response(null, { status: 302, headers: { Location: "/login?error=Missing%20password" } });
-      }
-      const isValidPassword = password === Deno.env.get("LOGIN_PASSWORD") || "secret123";
-      if (isValidPassword) {
-        const headers = new Headers({ Location: "/home" });
-        headers.set("Set-Cookie", "auth=valid; HttpOnly; Path=/; Max-Age=3600; SameSite=Strict; Secure");
-        return new Response(null, { status: 302, headers });
-      }
-      return new Response(null, { status: 302, headers: { Location: "/login?error=Invalid%20password" } });
-    } catch (error) {
-      console.error("Error processing login:", error);
-      return new Response(null, { status: 302, headers: { Location: "/login?error=Server%20error" } });
+    const form = await req.formData();
+    const password = form.get("password");
+
+    console.log(`Received password: ${password}, type: ${typeof password}`);
+
+    if (typeof password !== "string" || password.trim() !== PASSWORD) {
+      console.log("Password invalid or not a string");
+      return ctx.render({ error: "Ungültiges Passwort" });
     }
+
+    console.log("Password valid, setting cookie and redirecting to /home");
+    return new Response(null, {
+      status: 303,
+      headers: {
+        "Location": "/home",
+        "Set-Cookie": `session=1; HttpOnly; Path=/; SameSite=Lax; Max-Age=3600; Secure=${
+          Deno.env.get("DENO_DEPLOY") === "true"
+        }`,
+      },
+    });
   },
 };
 
-export default function LoginPage({ data }: PageProps<{ error?: string }>) {
-  const error = data?.error || undefined;
+export default function LoginPage(
+  { data }: PageProps<{ error: string | null }>,
+) {
   return (
-    <div style={{ maxWidth: "400px", margin: "auto", padding: "1rem" }}>
-      <h1>Login</h1>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
-      <form method="POST" action="/login">
-        <input type="password" name="password" placeholder="Password" required />
-        <button type="submit">Login</button>
+    <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+      <h1 class="text-2xl font-bold mb-4">Login</h1>
+      {data.error && <p class="text-red-500 mb-4">{data.error}</p>}
+      <form method="POST" action="/login" class="flex flex-col gap-4">
+        <label class="flex flex-col">
+          Passwort:
+          <input
+            type="password"
+            name="password"
+            class="mt-1 p-2 border rounded"
+            autoComplete="current-password"
+            required
+          />
+        </label>
+        <button
+          type="submit"
+          class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+        >
+          Anmelden
+        </button>
       </form>
     </div>
   );

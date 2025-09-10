@@ -1,0 +1,7 @@
+// importMap.json
+{
+  "imports": {
+    "@/": "./",
+    "@lib/": "./lib/"
+  }
+}
